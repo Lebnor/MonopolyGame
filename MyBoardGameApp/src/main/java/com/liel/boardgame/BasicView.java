@@ -27,8 +27,7 @@ public class BasicView extends View {
                 e.printStackTrace();
             }
         });
-
-
+        ////////////////////////////
     }
 
     @Override

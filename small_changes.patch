@@ -1,0 +1,17 @@
+Index: MyBoardGameApp/src/main/java/com/liel/boardgame/BasicView.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- MyBoardGameApp/src/main/java/com/liel/boardgame/BasicView.java	(revision 94d25fe3db6311b427e77f964750f6ea6e4180ae)
++++ MyBoardGameApp/src/main/java/com/liel/boardgame/BasicView.java	(date 1580259742846)
+@@ -27,8 +27,7 @@
+                 e.printStackTrace();
+             }
+         });
+-
+-
++        ////////////////////////////
+     }
+ 
+     @Override
