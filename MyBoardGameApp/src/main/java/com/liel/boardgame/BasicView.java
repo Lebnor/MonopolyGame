@@ -21,9 +21,7 @@ public class BasicView extends View {
             try {
                 Parent root = FXMLLoader.load(getClass().getResource("board.fxml"));
 
-//                BorderPane.setMargin(root, new Insets(screenHeight / 20, screenWidth / 20, screenHeight / 20, screenWidth / 20));
-//            BorderPane.setMargin(root,new Insets(100));
-//            getChildren().add(root);
+
                 setCenter(root);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -36,7 +34,7 @@ public class BasicView extends View {
     @Override
     protected void updateAppBar(AppBar appBar) {
         appBar.setNavIcon(MaterialDesignIcon.MENU.button(e -> System.out.println("Menu")));
-        appBar.setTitleText("Basic View");
+        appBar.setTitleText("Game");
         appBar.getActionItems().add(MaterialDesignIcon.SEARCH.button(e -> System.out.println("Search")));
     }
 
