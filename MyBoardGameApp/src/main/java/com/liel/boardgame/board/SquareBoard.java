@@ -1,11 +1,14 @@
 package com.liel.boardgame.board;
 
-import com.liel.boardgame.NodeFactory;
 import com.liel.boardgame.Player;
 import com.liel.boardgame.Utility;
+import com.liel.boardgame.effects.concrete_effects.GoBackwards;
 import com.liel.boardgame.effects.concrete_effects.GrantMoney;
-import com.liel.boardgame.node.*;
-import com.liel.boardgame.ui.VisualNode;
+import com.liel.boardgame.node.LinkedListNodeContainer;
+import com.liel.boardgame.node.Node;
+import com.liel.boardgame.node.NodeOrientation;
+import com.liel.boardgame.node.Point;
+import javafx.scene.control.Label;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,15 +36,14 @@ public class SquareBoard implements Board {
     }
 
     @Override
-    public GameNode getNode(int x, int y) {
+    public Node getNode(int x, int y) {
         Point check = new Point(x, y);
-        GameNode node = nodes.getNodeByPoint(check);
+        Node node = nodes.getNodeByPoint(check);
         if (node == null) {
             return null;
         }
         NodeOrientation orientation = checkOrientation(check);
-        VisualNode visualNode = new VisualNode(node, orientation);
-        return visualNode;
+        return node;
     }
 
     private NodeOrientation checkOrientation(Point point) {
@@ -57,62 +59,65 @@ public class SquareBoard implements Board {
     }
 
     public void movePlayer(Player player, Point to) {
-        this.movePlayer(player, nodes.getNodeByPoint(to));
+        this.placePlayer(player, nodes.getNodeByPoint(to));
     }
 
-    private void movePlayer(Player player, GameNode to) {
+
+    @Override
+    public Node placePlayer(Player player, Node where) {
         Point playersPoint = player.getCurrentPosition();
-        GameNode playersNode = nodes.getNodeByPoint(playersPoint);
-        to.addPlayer(player);
-        player.setCurrentPosition(to.getPoint());
-        if (playersNode != null) {
-            playersNode.removePlayer(player);
-        }
+        Node playersNode = nodes.getNodeByPoint(playersPoint);
+        playersNode.removePlayer(player);
+
+            where.addPlayer(player);
+
+        return playersNode;
     }
 
     @Override
-    public GameNode advancePlayer(Player player, int steps) {
+    public Node advancePlayer(Player player, int steps) {
         Point playersPoint = player.getCurrentPosition();
-        GameNode playersNode = nodes.getNodeByPoint(playersPoint);
+        Node playersNode = nodes.getNodeByPoint(playersPoint);
         assert playersNode != null : " player is inside a null node";
-        GameNode to = playersNode;
+        Node to = playersNode;
         for (int i = 0; i < steps; i++) {
             to = to.getNextNode();
-            movePlayer(player, to);
+            placePlayer(player, to);
+
         }
         return to;
     }
 
     @Override
-    public GameNode retreatPlayer(Player player, int steps) {
+    public Node retreatPlayer(Player player, int steps) {
         Point playersPoint = player.getCurrentPosition();
-        GameNode playersNode = nodes.getNodeByPoint(playersPoint);
+        Node playersNode = nodes.getNodeByPoint(playersPoint);
         assert playersNode != null : " player is inside a null node ";
-        GameNode to = playersNode;
+        Node to = playersNode;
         for (int i = 0; i < steps; i++) {
             to = to.getPrevNode();
-            movePlayer(player, to);
+            placePlayer(player, to);
         }
         return to;
     }
 
     @Override
-    public GameNode getBottomRight() {
+    public Node getBottomRight() {
         return nodes.getNodeByPoint(WIDTH - 1, HEIGHT - 1);
     }
 
     @Override
-    public GameNode getBottomLeft() {
+    public Node getBottomLeft() {
         return nodes.getNodeByPoint(0, HEIGHT - 1);
     }
 
     @Override
-    public GameNode getTopRight() {
+    public Node getTopRight() {
         return nodes.getNodeByPoint(WIDTH - 1, 0);
     }
 
     @Override
-    public GameNode getTopLeft() {
+    public Node getTopLeft() {
         return nodes.getNodeByPoint(0, 0);
     }
 
@@ -121,29 +126,33 @@ public class SquareBoard implements Board {
         // down
         for (int i = WIDTH - 1; i >= 0; i--) {
             Point point = new Point(i, HEIGHT - 1);
-            GameNode node = new Node(point);
+            Node node = new Node(point, checkOrientation(point));
             nodes.addNext(node);
 //            VisualNode node = NodeFactory.getNode(i,HEIGHT-1)
         }
 //         left
         for (int i = HEIGHT - 2; i >= 0; i--) {
             Point point = new Point(0, i);
-            Node node = new Node(point);
+            Node node = new Node(point, checkOrientation(point));
             nodes.addNext(node);
         }
         // up
         for (int i = 0; i < WIDTH; i++) {
             Point point = new Point(i, 0);
-            Node node = new Node(point);
+            Node node = new Node(point, checkOrientation(point));
             node.setEffect(new GrantMoney("You got some money", new Random().nextInt(99)));
+            node.getChildren().add(new Label("$"));
             nodes.addNext(node);
         }
         // right
         for (int i = 0; i < HEIGHT - 1; i++) {
             Point point = new Point(WIDTH - 1, i);
-            Node node = new Node(point);
+            Node node = new Node(point, checkOrientation(point));
             nodes.addNext(node);
         }
+        Node goBackwards = nodes.getNodeByPoint(0,3);
+        goBackwards.setEffect(new GoBackwards("You have done something bad so you must go back 3 tiles",this,3));
+        goBackwards.getChildren().add(new Label("down"));
 
     }
 
@@ -154,7 +163,7 @@ public class SquareBoard implements Board {
             System.out.print(i + " ");
             for (int j = 0; j < WIDTH; j++) {
                 Point check = new Point(j, i);
-                GameNode node = nodes.getNodeByPoint(check);
+                Node node = nodes.getNodeByPoint(check);
                 if (node == null) {
                     System.out.print(Utility.EMPTY_ROOM);
                 } else if (!node.getPlayersOnNode().isEmpty()) {
@@ -180,7 +189,7 @@ public class SquareBoard implements Board {
 //        players.add(enemy);
 
         for (Player player : players) {
-            squareBoard.movePlayer(player, squareBoard.getBottomRight());
+            squareBoard.placePlayer(player, squareBoard.getBottomRight());
         }
         squareBoard.printBoard();
 

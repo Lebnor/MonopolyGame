@@ -5,8 +5,9 @@ import com.liel.boardgame.Player;
 import com.liel.boardgame.Utility;
 import com.liel.boardgame.board.Board;
 import com.liel.boardgame.board.SquareBoard;
+import com.liel.boardgame.dice.Dice;
 import com.liel.boardgame.game.Game;
-import com.liel.boardgame.node.GameNode;
+import com.liel.boardgame.node.Node;
 import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -14,8 +15,10 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
@@ -38,8 +41,9 @@ public class BoardController {
 
     private Board board = new SquareBoard(length);
     private List<Player> players = Utility.getBasicList();
-    private Game game = new Game(board, players);
-    List<VisualNode> nodes = new ArrayList<>();
+    private Dice dice = new Dice("abc");
+    private Game game = new Game(board, players, dice);
+    List<Node> nodes = new ArrayList<>();
 
     public void initialize() {
 
@@ -48,26 +52,33 @@ public class BoardController {
         gameBoard.maxHeightProperty().bind(doubleProperty);
         gameBoard.maxWidthProperty().bind(gameBoard.heightProperty());
 
+        for (Player player : players){
+            player.setStyle("-fx-font-family: 'Comic Sans MS'; ");
+        }
 
         for (int i = 0; i < length; i++) {
             for (int j = 0; j < length; j++) {
-                GameNode visualNode = board.getNode(j, i);
+                Node visualNode = board.getNode(j, i);
                 System.out.println("Creating visualNode " + visualNode);
 
                 if (visualNode == null) {
                     continue;
                 }
-                VisualNode node = (VisualNode) visualNode;
-                gameBoard.add(node, j, i);
-                nodes.add(node);
+                gameBoard.add(visualNode, j, i);
+                nodes.add(visualNode);
             }
         }
-        for (Player player : players) {
-            VisualPlayer visualPlayer = new VisualPlayer(player);
-            nodes.get(0).getChildren().add(visualPlayer);
 
-        }
         Button button = new Button("Roll dice");
+        HBox hBox = new HBox();
+        Label label = new Label();
+        hBox.setSpacing(35);
+        Label status = new Label();
+        hBox.getChildren().addAll(button,label,status);
+        BorderPane.setAlignment(hBox, Pos.TOP_CENTER);
+        BorderPane.setMargin(hBox, new Insets(50, 0, 0, 0));
+        root.setTop(hBox);
+
         button.setOnMouseClicked(event -> {
             TranslateTransition translateForward = new TranslateTransition(Duration.millis(500), button);
             translateForward.setByY(-30);
@@ -83,18 +94,20 @@ public class BoardController {
             RotateTransition rotateTransition = new RotateTransition(Duration.millis(1000), button);
             rotateTransition.setByAngle(360);
             rotateTransition.play();
+            game.makeMove();
+            label.setText(game.getPlayerTurn().getName() + "\nRolled: " + dice.getLastRoll());
 
-            int node = game.makeMove();
-            nodes.get(node).getChildren().add(new VisualPlayer(game.getPlayerTurn()));
+            StringBuffer buffer = new StringBuffer();
+            for (Player player : players){
+                buffer.append(player.getName());
+                buffer.append(" - ");
+                buffer.append(player.getMoney());
+                buffer.append("\n");
+            }
+            status.setText(buffer.toString());
 
-//            if (node instanceof VisualNode){
-//                System.out.println("moving " + game.getPlayerTurn() + " to " + node);
-//                node.addPlayer(game.getPlayerTurn());
-//            }
         });
 
-        BorderPane.setAlignment(button, Pos.CENTER);
-        BorderPane.setMargin(button, new Insets(50, 0, 0, 0));
-        root.setTop(button);
+
     }
 }

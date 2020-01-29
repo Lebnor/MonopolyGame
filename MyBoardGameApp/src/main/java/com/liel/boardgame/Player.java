@@ -2,12 +2,14 @@ package com.liel.boardgame;
 
 import com.liel.boardgame.effects.BaseEffect;
 import com.liel.boardgame.node.Point;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Player {
+public class Player extends Circle {
 
     private String name;
     private List<BaseEffect> currentEffects;
@@ -24,6 +26,27 @@ public class Player {
         this.currentEffects = new ArrayList<>();
         this.name = name;
         this.playerID = ID;
+        Color color = null;
+        switch (playerID) {
+            case 1:
+                color = Color.BLUE;
+                break;
+            case 2:
+                color = Color.RED;
+                break;
+            case 3:
+                color = Color.GREEN;
+                break;
+            case 4:
+                color = Color.YELLOW;
+                break;
+        }
+        assert color != null : "must inititalize Player with proper id";
+        setFill(color);
+        setRadius(15);
+    }
+    public String getName(){
+        return this.name;
     }
     public int getPlayerID(){
         return playerID;
@@ -70,7 +93,6 @@ public class Player {
         if (o == null || getClass() != o.getClass()) return false;
         Player player = (Player) o;
         return name.equals(player.name) &&
-                Objects.equals(currentEffects, player.currentEffects) &&
                 currentPosition.equals(player.currentPosition);
     }
 
@@ -83,5 +105,9 @@ public class Player {
         this.money += howMuch;
         System.out.println(">>inside Player grantMoney(int howMuch)");
         System.out.println(this + " got $" + howMuch);
+    }
+
+    public String getMoney() {
+        return "$" + this.money;
     }
 }

@@ -21,9 +21,9 @@ public abstract class Utility {
     }
 
     public static List<Player> getBasicList() {
-        Player liel = new Player("player1",1);
-        Player enemy = new Player("player2",2);
-        Player yossi = new Player("player3",3);
+        Player liel = new Player("Player 1",1);
+        Player enemy = new Player("Player 2",2);
+        Player yossi = new Player("Player 3",3);
         Player random = new Player(4);
         List<Player> players = new ArrayList<>();
         players.add(liel);

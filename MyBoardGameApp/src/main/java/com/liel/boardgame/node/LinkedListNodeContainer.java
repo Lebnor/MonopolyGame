@@ -1,30 +1,30 @@
 package com.liel.boardgame.node;
 
-import com.liel.boardgame.ui.VisualNode;
+
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class LinkedListNodeContainer extends NodeContainer {
 
-    private final Map<Point, GameNode> indexNodes;
+    private final Map<Point, Node> indexNodes;
 
     public LinkedListNodeContainer() {
         super();
         indexNodes = new HashMap<>();
     }
 
-    public GameNode getNodeByPoint(int x, int y) {
+    public Node getNodeByPoint(int x, int y) {
         Point check = new Point(x, y);
         return getNodeByPoint(check);
     }
 
-    public GameNode getNodeByPoint(Point point) {
+    public Node getNodeByPoint(Point point) {
         return indexNodes.getOrDefault(point, null);
     }
 
     public boolean containsPoint(Point point) {
-        for (GameNode node : indexNodes.values()) {
+        for (Node node : indexNodes.values()) {
             if (node.getPoint().equals(point)) {
                 return true;
             }
@@ -34,7 +34,7 @@ public class LinkedListNodeContainer extends NodeContainer {
 
 
     @Override
-    public boolean addNext(GameNode newNode) {
+    public boolean addNext(Node newNode) {
         if (newNode == null) {
             return false;
         }
@@ -63,9 +63,9 @@ public class LinkedListNodeContainer extends NodeContainer {
         System.out.println(linkedListNodeContainer);
 
         Point bankPoint = new Point(2, 2);
-        Node bank = new Node(bankPoint);
-        VisualNode node = new VisualNode(bank,NodeOrientation.CORNER);
-        linkedListNodeContainer.addNext(node);
+        Node bank = new Node(bankPoint,NodeOrientation.CORNER);
+//        VisualNode node = new VisualNode(bank,NodeOrientation.CORNER);
+        linkedListNodeContainer.addNext(bank);
         System.out.println(linkedListNodeContainer);
         System.out.println();
         System.out.println(linkedListNodeContainer.getNodeByPoint(0, 0));

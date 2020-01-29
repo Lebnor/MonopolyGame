@@ -1,18 +1,16 @@
 package com.liel.boardgame.node;
 
-import com.liel.boardgame.ui.VisualNode;
-
 public class NodeContainer {
 
-    private GameNode head;
-    private GameNode last;
+    private Node head;
+    private Node last;
     private int size = 1;
 
     public NodeContainer() {
 //        last = head;
     }
 
-    public boolean addNext(GameNode newNode) {
+    public boolean addNext(Node newNode) {
         if (newNode == null) {
             return false;
         }
@@ -40,7 +38,7 @@ public class NodeContainer {
         return size;
     }
 
-    public GameNode getHead() {
+    public Node getHead() {
         return this.head;
     }
 
@@ -49,7 +47,7 @@ public class NodeContainer {
     public String toString() {
 
         StringBuilder sb = new StringBuilder();
-        GameNode node = this.head;
+        Node node = this.head;
         for (int i = 0; i < size; i++) {
             sb.append(node.toString() + "\n");
             node = node.getNextNode();
@@ -61,9 +59,9 @@ public class NodeContainer {
         NodeContainer container = new NodeContainer();
         for (int i = 0; i < size; i++) {
             Point point = new Point(i + 1, i + 1);
-            Node node = new Node(point);
-            VisualNode visualNode = new VisualNode(node,NodeOrientation.CORNER);
-            container.addNext(visualNode);
+            Node node = new Node(point,NodeOrientation.CORNER);
+//            Node visualNode = new Node(node,NodeOrientation.CORNER);
+            container.addNext(node);
         }
         return container;
     }

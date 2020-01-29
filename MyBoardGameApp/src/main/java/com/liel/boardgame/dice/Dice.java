@@ -1,22 +1,33 @@
 package com.liel.boardgame.dice;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+
 import java.util.Random;
 
-public class Dice {
+public class Dice  {
 
     private Random random;
+    int lastRoll = 0;
 
-    public Dice() {
+    public Dice(String text) {
         this.random = new Random();
+
     }
 
     public int roll() {
-        return random.nextInt(6)+1;
+        int roll = random.nextInt(6)+1;
+        lastRoll = roll;
+        return roll;
+    }
+    public int getLastRoll(){
+    return this.lastRoll;
     }
 
 
     public static void main(String[] args) {
-        Dice dice = new Dice();
+        Dice dice = new Dice("");
 
         final int TRIES = 500000;
 
