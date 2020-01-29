@@ -27,14 +27,13 @@ public class BasicView extends View {
                 e.printStackTrace();
             }
         });
-        ////////////////////////////
+
     }
 
     @Override
     protected void updateAppBar(AppBar appBar) {
         appBar.setNavIcon(MaterialDesignIcon.MENU.button(e -> System.out.println("Menu")));
         appBar.setTitleText("Game");
-        appBar.getActionItems().add(MaterialDesignIcon.SEARCH.button(e -> System.out.println("Search")));
     }
 
 }
