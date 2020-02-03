@@ -1,7 +1,10 @@
 package com.liel.boardgame.ui;
 
+import com.gluonhq.charm.down.Platform;
 import com.gluonhq.charm.glisten.application.MobileApplication;
+import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import com.liel.boardgame.Player;
+import com.liel.boardgame.UserPreferences;
 import com.liel.boardgame.Utility;
 import com.liel.boardgame.board.Board;
 import com.liel.boardgame.board.SquareBoard;
@@ -16,9 +19,12 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
@@ -31,13 +37,16 @@ public class BoardController {
 
     private static final SimpleDoubleProperty doubleProperty = new SimpleDoubleProperty(screenWidth);
 
+    private final int length;
+
     @FXML
     private BorderPane root;
 
     @FXML
     private GridPane gameBoard;
-
-    private final int length = 6;
+    int playerTurn = 0;
+    @FXML
+    private ScrollPane scrollPane;
 
     private Board board = new SquareBoard(length);
     private List<Player> players = Utility.getBasicList();
@@ -45,15 +54,21 @@ public class BoardController {
     private Game game = new Game(board, players, dice);
     List<Node> nodes = new ArrayList<>();
 
-    public void initialize() {
+    {
+        String[] data = UserPreferences.getInstance().getBoardLength().split(" ");
+        String sLength = data[0];
+        length = Integer.parseInt(sLength);
+    }
 
+    public void initialize() {
+//        handleScrollPane();
         BorderPane.setAlignment(gameBoard, Pos.CENTER);
         gameBoard.setAlignment(Pos.CENTER);
         gameBoard.maxHeightProperty().bind(doubleProperty);
         gameBoard.maxWidthProperty().bind(gameBoard.heightProperty());
 
-        for (Player player : players){
-            player.setStyle("-fx-font-family: 'Comic Sans MS'; ");
+        for (Player player : players) {
+            player.setStyle("-fx-font-family: " + "Comic Sans MS");
         }
 
         for (int i = 0; i < length; i++) {
@@ -69,15 +84,36 @@ public class BoardController {
             }
         }
 
-        Button button = new Button("Roll dice");
-        HBox hBox = new HBox();
+        Button button = new Button("");
+        button.setStyle("-fx-background-color: white; -fx-border-radius: 50%; ");
+        try {
+            Image image = new Image(getClass().getResourceAsStream("/dice-icon.jpg"));
+            ImageView imageView = new ImageView(image);
+            imageView.setFitWidth(50);
+//            imageView.setFitHeight(20);
+            imageView.setPreserveRatio(true);
+            button.setGraphic(imageView);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        VBox hBox = new VBox();
         Label label = new Label();
         hBox.setSpacing(35);
-        Label status = new Label();
-        hBox.getChildren().addAll(button,label,status);
-        BorderPane.setAlignment(hBox, Pos.TOP_CENTER);
-        BorderPane.setMargin(hBox, new Insets(50, 0, 0, 0));
-        root.setTop(hBox);
+        PlayersStatus status = new PlayersStatus(this.players);
+//        status.setAlignment(Pos.CENTER);
+//        status.setSpacing(15);
+        hBox.getChildren().addAll(button, label, status);
+        BorderPane.setAlignment(hBox, Pos.CENTER_LEFT);
+        BorderPane.setMargin(hBox, new Insets(50, 5, 0, 15));
+        root.setRight(hBox);
+
+        Button settings = MaterialDesignIcon.SETTINGS.button();
+        settings.setStyle("-fx-text-fill: blue");
+        settings.setAlignment(Pos.CENTER_LEFT);
+        hBox.getChildren().add(settings);
+        settings.setOnAction(event -> {
+            MobileApplication.getInstance().switchView("SETTINGS");
+        });
 
         button.setOnMouseClicked(event -> {
             TranslateTransition translateForward = new TranslateTransition(Duration.millis(500), button);
@@ -96,18 +132,17 @@ public class BoardController {
             rotateTransition.play();
             game.makeMove();
             label.setText(game.getPlayerTurn().getName() + "\nRolled: " + dice.getLastRoll());
+            status.update();
+            int roll = dice.roll();
 
-            StringBuffer buffer = new StringBuffer();
-            for (Player player : players){
-                buffer.append(player.getName());
-                buffer.append(" - ");
-                buffer.append(player.getMoney());
-                buffer.append("\n");
-            }
-            status.setText(buffer.toString());
 
         });
+    }
 
-
+    private void handleScrollPane() {
+        if (!Platform.isDesktop()) {
+            scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+            scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        }
     }
 }

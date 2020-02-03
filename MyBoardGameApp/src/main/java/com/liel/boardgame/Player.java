@@ -1,9 +1,13 @@
 package com.liel.boardgame;
 
 import com.liel.boardgame.effects.BaseEffect;
+import com.liel.boardgame.move.Direction;
 import com.liel.boardgame.node.Point;
+import javafx.animation.TranslateTransition;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,10 +20,12 @@ public class Player extends Circle {
     private Point currentPosition;
     private int playerID;
     private int money = 0;
+    private Color color;
+    private Direction direction = Direction.LEFT;
 
 
     public Player(int ID) {
-        this(Utility.getRandomName(),ID);
+        this(Utility.getRandomName(), ID);
     }
 
     public Player(String name, int ID) {
@@ -43,12 +49,30 @@ public class Player extends Circle {
         }
         assert color != null : "must inititalize Player with proper id";
         setFill(color);
-        setRadius(15);
+//        setRadius(15);
+//        if (!Platform.isDesktop()){
+        setRadius(10);
+//        }
+        this.color = color;
     }
-    public String getName(){
+
+    public Direction getDirection() {
+        return direction;
+    }
+
+    public void setDirection(Direction direction) {
+        this.direction = direction;
+    }
+
+    public Color getColor() {
+        return this.color;
+    }
+
+    public String getName() {
         return this.name;
     }
-    public int getPlayerID(){
+
+    public int getPlayerID() {
         return playerID;
     }
 
@@ -109,5 +133,13 @@ public class Player extends Circle {
 
     public String getMoney() {
         return "$" + this.money;
+    }
+
+    public SimpleBooleanProperty delay(int i) {
+        SimpleBooleanProperty booleanProperty = new SimpleBooleanProperty();
+        TranslateTransition transition = new TranslateTransition(Duration.millis(i), this);
+        transition.play();
+        transition.setOnFinished(event -> booleanProperty.set(true));
+        return booleanProperty;
     }
 }

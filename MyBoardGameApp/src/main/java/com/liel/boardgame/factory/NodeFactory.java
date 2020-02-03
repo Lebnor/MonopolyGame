@@ -1,4 +1,4 @@
-package com.liel.boardgame;
+package com.liel.boardgame.factory;
 
 import com.liel.boardgame.node.Node;
 import com.liel.boardgame.node.NodeOrientation;

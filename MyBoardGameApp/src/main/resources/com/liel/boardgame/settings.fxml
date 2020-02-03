@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.gluonhq.charm.glisten.control.CardPane?>
+<?import com.liel.boardgame.ui.ToggleSwitch?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.*?>
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="mainRoot" xmlns="http://javafx.com/javafx/11.0.1"
+            fx:controller="com.liel.boardgame.ui.SettingsController">
+    <center>
+        <CardPane BorderPane.alignment="CENTER">
+            <HBox spacing="25.0">
+                <children>
+                    <Label style="-fx-padding:10;" text="Board size"/>
+                    <ComboBox fx:id="boardSizeComboBox" maxHeight="1.7976931348623157E308" promptText="default 6 x 6"
+                              HBox.hgrow="ALWAYS"/>
+                </children>
+            </HBox>
+            <HBox spacing="25.0">
+                <children>
+                    <Label style="-fx-padding:10;" text="Scroll bar"/>
+                    <ToggleSwitch fx:id="isScrollBarToggleSwitch"/>
+
+                </children>
+            </HBox>
+            <HBox fx:id="items3">
+
+            </HBox>
+        </CardPane>
+    </center>
+</BorderPane>

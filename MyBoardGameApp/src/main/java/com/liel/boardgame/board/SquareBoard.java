@@ -2,8 +2,8 @@ package com.liel.boardgame.board;
 
 import com.liel.boardgame.Player;
 import com.liel.boardgame.Utility;
-import com.liel.boardgame.effects.concrete_effects.GoBackwards;
 import com.liel.boardgame.effects.concrete_effects.GrantMoney;
+import com.liel.boardgame.factory.EffectFactory;
 import com.liel.boardgame.node.LinkedListNodeContainer;
 import com.liel.boardgame.node.Node;
 import com.liel.boardgame.node.NodeOrientation;
@@ -37,13 +37,12 @@ public class SquareBoard implements Board {
 
     @Override
     public Node getNode(int x, int y) {
-        Point check = new Point(x, y);
-        Node node = nodes.getNodeByPoint(check);
-        if (node == null) {
-            return null;
-        }
-        NodeOrientation orientation = checkOrientation(check);
-        return node;
+        return this.getNode(new Point(x, y));
+    }
+
+    @Override
+    public Node getNode(Point point) {
+        return nodes.getNodeByPoint(point);
     }
 
     private NodeOrientation checkOrientation(Point point) {
@@ -69,7 +68,7 @@ public class SquareBoard implements Board {
         Node playersNode = nodes.getNodeByPoint(playersPoint);
         playersNode.removePlayer(player);
 
-            where.addPlayer(player);
+        where.addPlayer(player);
 
         return playersNode;
     }
@@ -82,7 +81,7 @@ public class SquareBoard implements Board {
         Node to = playersNode;
         for (int i = 0; i < steps; i++) {
             to = to.getNextNode();
-            placePlayer(player, to);
+//            placePlayer(player, to);
 
         }
         return to;
@@ -96,7 +95,7 @@ public class SquareBoard implements Board {
         Node to = playersNode;
         for (int i = 0; i < steps; i++) {
             to = to.getPrevNode();
-            placePlayer(player, to);
+//            placePlayer(player, to);
         }
         return to;
     }
@@ -150,12 +149,24 @@ public class SquareBoard implements Board {
             Node node = new Node(point, checkOrientation(point));
             nodes.addNext(node);
         }
-        Node goBackwards = nodes.getNodeByPoint(0,3);
-        goBackwards.setEffect(new GoBackwards("You have done something bad so you must go back 3 tiles",this,3));
-        goBackwards.getChildren().add(new Label("down"));
+        Node goBackwards = nodes.getNodeByPoint(0, 4);
+        goBackwards.setEffect(EffectFactory.goForward(this, goBackwards, 4));
+//
+        Node goBackwards2 = nodes.getNodeByPoint(WIDTH - 1, HEIGHT - 1);
+        goBackwards2.setEffect(EffectFactory.goForward(this, goBackwards2, 4));
+
 
     }
 
+    @Override
+    public int getWidth() {
+        return WIDTH;
+    }
+
+    @Override
+    public int getHeight() {
+        return HEIGHT;
+    }
 
     @Override
     public void printBoard() {
